@@ -5,8 +5,7 @@
 This repository provides the official implementation of our NeurIPS 2024 paper:
 
 > **ActFusion: A Unified Diffusion Model for Action Segmentation and Anticipation** <br>
-> [Dayoung Gong](https://gongda0e.github.io/), [Suha Kwak](https://suhakwak.github.io/), [Minsu Cho](http://cvlab.postech.ac.kr/~mcho/)
-> POSTECH
+> [Dayoung Gong](https://gongda0e.github.io/), Suha Kwak, and Minsu Cho
 > *NeurIPS, Vancouver, 2024*
 
 <p align="center">
