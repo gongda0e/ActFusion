@@ -119,7 +119,7 @@ if __name__ == '__main__':
         if args.ckpt:
             model_path = os.path.join('ckpt', dataset_name, 'split'+str(args.split)+'.model')
         else:
-            model_path = os.path.join('result', args.result_dir, dataset_name, 'split'+str(args.split), 'epoch-7000.model')
+            model_path = os.path.join('result', args.result_dir, dataset_name, 'split'+str(args.split), 'best_combined_model.pth')
         print("model loaded:", model_path)
         result_path = os.path.join('result', args.result_dir, dataset_name, 'split'+str(args.split))
 

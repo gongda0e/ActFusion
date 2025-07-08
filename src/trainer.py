@@ -183,7 +183,7 @@ class Trainer:
                     lta_f1s_02 = [test_result_dict20.get(k, 0.0) for k in lta_keys_02]
                     lta_f1s_03 = [test_result_dict30.get(k, 0.0) for k in lta_keys_03]
                     lta_score = (sum(lta_f1s_02) + sum(lta_f1s_03)) / (len(lta_f1s_02) + len(lta_f1s_03))
-                    self._save_best_models(tas_score, lta_score, epoch, result_dir, tas_metrics=test_result_dict, lta_metrics={'obs0.2': test_result_dict20, 'obs0.3': test_result_dict30})
+                    self._save_best_models(tas_score, lta_score, result_dir, tas_metrics=test_result_dict, lta_metrics={'obs0.2': test_result_dict20, 'obs0.3': test_result_dict30})
                     # =====================
 
                     w.write(w_)
@@ -216,53 +216,62 @@ class Trainer:
             logger.close()
 
         # Print best model performances
-        print("\n" + "="*60)
-        print("BEST MODEL PERFORMANCES")
-        print("="*60)
-        print(f"Best TAS Score: {self.best_tas_acc:.4f}")
-        print(f"Best LTA Score: {self.best_lta_moc:.4f}")
-        print(f"Best Combined Score: {self.best_both_score:.4f}")
+        final_summary = "\n" + "="*60 + "\n"
+        final_summary += "BEST MODEL PERFORMANCES\n"
+        final_summary += "="*60 + "\n"
+        final_summary += f"Best TAS Score: {self.best_tas_acc:.2f}\n"
+        final_summary += f"Best LTA Score: {self.best_lta_moc:.2f}\n"
+        final_summary += f"Best Combined Score: {self.best_both_score:.2f}\n"
         
         if self.best_tas_metrics:
-            print("\nBest TAS Metrics:")
-            print(f"  - Acc: {self.best_tas_metrics['Acc']:.4f}")
-            print(f"  - Edit: {self.best_tas_metrics['Edit']:.4f}")
-            print(f"  - F1@10: {self.best_tas_metrics['F1@10']:.4f}")
-            print(f"  - F1@25: {self.best_tas_metrics['F1@25']:.4f}")
-            print(f"  - F1@50: {self.best_tas_metrics['F1@50']:.4f}")
+            final_summary += "\nBest TAS Metrics:\n"
+            final_summary += f"  - Acc: {self.best_tas_metrics['Acc']:.2f}\n"
+            final_summary += f"  - Edit: {self.best_tas_metrics['Edit']:.2f}\n"
+            final_summary += f"  - F1@10: {self.best_tas_metrics['F1@10']:.2f}\n"
+            final_summary += f"  - F1@25: {self.best_tas_metrics['F1@25']:.2f}\n"
+            final_summary += f"  - F1@50: {self.best_tas_metrics['F1@50']:.2f}\n"
         
         if self.best_lta_metrics:
-            print("\nBest LTA Metrics:")
-            print("  obs_p=0.2:")
+            final_summary += "\nBest LTA Metrics:\n"
+            final_summary += "  obs_p=0.2:\n"
             for key in ["obs0.2_pred0.1", "obs0.2_pred0.2", "obs0.2_pred0.3", "obs0.2_pred0.5"]:
                 if key in self.best_lta_metrics['obs0.2']:
-                    print(f"    - {key}: {self.best_lta_metrics['obs0.2'][key]:.4f}")
-            print("  obs_p=0.3:")
+                    final_summary += f"    - {key}: {self.best_lta_metrics['obs0.2'][key]:.2f}\n"
+            final_summary += "  obs_p=0.3:\n"
             for key in ["obs0.3_pred0.1", "obs0.3_pred0.2", "obs0.3_pred0.3", "obs0.3_pred0.5"]:
                 if key in self.best_lta_metrics['obs0.3']:
-                    print(f"    - {key}: {self.best_lta_metrics['obs0.3'][key]:.4f}")
+                    final_summary += f"    - {key}: {self.best_lta_metrics['obs0.3'][key]:.2f}\n"
         
         if self.best_combined_metrics:
-            print("\nBest Combined Model Metrics:")
-            print("  TAS Metrics:")
+            final_summary += "\nBest Combined Model Metrics:\n"
+            final_summary += "  TAS Metrics:\n"
             tas_metrics = self.best_combined_metrics['tas']
-            print(f"    - Acc: {tas_metrics['Acc']:.4f}")
-            print(f"    - Edit: {tas_metrics['Edit']:.4f}")
-            print(f"    - F1@10: {tas_metrics['F1@10']:.4f}")
-            print(f"    - F1@25: {tas_metrics['F1@25']:.4f}")
-            print(f"    - F1@50: {tas_metrics['F1@50']:.4f}")
-            print("  LTA Metrics:")
+            final_summary += f"    - Acc: {tas_metrics['Acc']:.2f}\n"
+            final_summary += f"    - Edit: {tas_metrics['Edit']:.2f}\n"
+            final_summary += f"    - F1@10: {tas_metrics['F1@10']:.2f}\n"
+            final_summary += f"    - F1@25: {tas_metrics['F1@25']:.2f}\n"
+            final_summary += f"    - F1@50: {tas_metrics['F1@50']:.2f}\n"
+            final_summary += "  LTA Metrics:\n"
             lta_metrics = self.best_combined_metrics['lta']
-            print("    obs_p=0.2:")
+            final_summary += "    obs_p=0.2:\n"
             for key in ["obs0.2_pred0.1", "obs0.2_pred0.2", "obs0.2_pred0.3", "obs0.2_pred0.5"]:
                 if key in lta_metrics['obs0.2']:
-                    print(f"      - {key}: {lta_metrics['obs0.2'][key]:.4f}")
-            print("    obs_p=0.3:")
+                    final_summary += f"      - {key}: {lta_metrics['obs0.2'][key]:.2f}\n"
+            final_summary += "    obs_p=0.3:\n"
             for key in ["obs0.3_pred0.1", "obs0.3_pred0.2", "obs0.3_pred0.3", "obs0.3_pred0.5"]:
                 if key in lta_metrics['obs0.3']:
-                    print(f"      - {key}: {lta_metrics['obs0.3'][key]:.4f}")
+                    final_summary += f"      - {key}: {lta_metrics['obs0.3'][key]:.2f}\n"
         
-        print("="*60)
+        final_summary += "="*60 + "\n"
+        
+        # Print to console
+        print(final_summary)
+        
+        # Write to log.txt file
+        if result_dir:
+            w_path = os.path.join(result_dir, 'log.txt')
+            with open(w_path, 'a') as w:
+                w.write(final_summary)
 
 
 
@@ -270,7 +279,6 @@ class Trainer:
         assert(test_dataset.mode == 'test')
         assert(mode in ['encoder', 'decoder-noagg', 'decoder-agg'])
         assert(self.postprocess['type'] in ['median', 'mode', 'purge', None])
-
 
         self.model.eval()
         self.model.to(device)
@@ -284,7 +292,6 @@ class Trainer:
             seed = None
 
         with torch.no_grad():
-
             feature, label, _, video = test_dataset[video_idx]
 
             # feature:   [torch.Size([1, F, Sampled T])]
@@ -369,7 +376,6 @@ class Trainer:
                             output[mid:ends[e]] = trans[e+1]
 
             label = label.squeeze(0).cpu().numpy()
-
             assert(output.shape == label.shape)
 
             return video, output, label
@@ -385,7 +391,6 @@ class Trainer:
         if model_path:
             self.model.load_state_dict(torch.load(model_path))
 
-
         mapping_file = os.path.join('datasets', all_params['dataset_name'], 'mapping.txt')
         actions_dict = read_mapping_dict(mapping_file)
         actions_dict_inv = {v: k for k, v in actions_dict.items()}
@@ -397,12 +402,9 @@ class Trainer:
             T_actions = np.zeros((len(eval_ps), len(actions_dict)))
             F_actions = np.zeros((len(eval_ps), len(actions_dict)))
 
-
         with torch.no_grad():
             result_dict = {}
-
             for video_idx in tqdm(range(len(test_dataset))):
-
                 video, pred, label = self.test_single_video(
                     video_idx, test_dataset, mode, device, model_path, args, all_params, obs_p=obs_p)
 
@@ -451,8 +453,8 @@ class Trainer:
                             acc += float(T_actions[i,j]/total_actions[i,j])
                             n+=1
 
-                    result = 'obs. %d '%int(100*obs_p) + 'pred. %d '%int(100*eval_ps[i])+'--> MoC: %.4f'%(float(acc)/n)
-                    result_dict['obs'+str(obs_p)+'_pred'+str(eval_ps[i])] = float(acc)/n
+                    result = 'obs. %d '%int(100*obs_p) + 'pred. %d '%int(100*eval_ps[i])+'--> MoC: %.2f'%((float(acc)/n)*100)
+                    result_dict['obs'+str(obs_p)+'_pred'+str(eval_ps[i])] = (float(acc)/n)*100  # Store as percentage
                     print(result)
 
 
@@ -470,11 +472,11 @@ class Trainer:
         result_dict['F1@50'] = f1s[2]
 
         if not is_anticipation:
-            print("Acc:%.3f"%acc)
-            print("Edit: %.3f"%edit)
-            print('F1@10: %.3f'%f1s[0])
-            print('F1@25: %.3f'%f1s[1])
-            print('F1@50: %.3f'%f1s[2])
+            print("Acc:%.2f"%acc)
+            print("Edit: %.2f"%edit)
+            print('F1@10: %.2f'%f1s[0])
+            print('F1@25: %.2f'%f1s[1])
+            print('F1@50: %.2f'%f1s[2])
 
         return result_dict
 
@@ -507,42 +509,43 @@ class Trainer:
         
         # Add to text buffer
         text_buffer += f"LTA Results (obs_p={obs_p}):\n"
-        text_buffer += f"obs{obs_p}_pred0.1: %.2f" % (result_dict[f"obs{obs_p}_pred0.1"]*100) + '\n'
-        text_buffer += f"obs{obs_p}_pred0.2: %.2f" % (result_dict[f"obs{obs_p}_pred0.2"]*100) + '\n'
-        text_buffer += f"obs{obs_p}_pred0.3: %.2f" % (result_dict[f"obs{obs_p}_pred0.3"]*100) + '\n'
-        text_buffer += f"obs{obs_p}_pred0.5: %.2f" % (result_dict[f"obs{obs_p}_pred0.5"]*100) + '\n\n'
+        text_buffer += f"obs{obs_p}_pred0.1: %.2f" % result_dict[f"obs{obs_p}_pred0.1"] + '\n'
+        text_buffer += f"obs{obs_p}_pred0.2: %.2f" % result_dict[f"obs{obs_p}_pred0.2"] + '\n'
+        text_buffer += f"obs{obs_p}_pred0.3: %.2f" % result_dict[f"obs{obs_p}_pred0.3"] + '\n'
+        text_buffer += f"obs{obs_p}_pred0.5: %.2f" % result_dict[f"obs{obs_p}_pred0.5"] + '\n\n'
         
         return text_buffer
 
-    def _save_best_models(self, tas_acc, lta_moc, epoch, result_dir, tas_metrics=None, lta_metrics=None):
+    def _save_best_models(self, tas_acc, lta_moc, result_dir, tas_metrics=None, lta_metrics=None):
         """Save best models based on TAS accuracy, LTA MoC, and combined score"""
-        # Calculate combined score (you can adjust the weights)
-        combined_score = tas_acc * 0.5 + lta_moc * 0.5
+        # LTA metric is already scaled to percentage (0.1-0.3 → 10-30)
+        # Calculate combined score with equal weights
+        combined_score = (tas_acc + lta_moc) / 2
         
         # Check and save best TAS model
         if tas_acc > self.best_tas_acc:
             self.best_tas_acc = tas_acc
             self.best_tas_metrics = tas_metrics
             torch.save(self.model.state_dict(), f'{result_dir}/best_tas_model.pth')
-            print(f'New best TAS model saved! Score: {tas_acc:.4f}')
+            print(f'New best TAS model saved! Score: {tas_acc:.2f}')
             if tas_metrics:
-                print(f'  TAS Metrics - Acc: {tas_metrics["Acc"]:.4f}, Edit: {tas_metrics["Edit"]:.4f}, F1@10: {tas_metrics["F1@10"]:.4f}, F1@25: {tas_metrics["F1@25"]:.4f}, F1@50: {tas_metrics["F1@50"]:.4f}')
+                print(f'  TAS Metrics - Acc: {tas_metrics["Acc"]:.2f}, Edit: {tas_metrics["Edit"]:.2f}, F1@10: {tas_metrics["F1@10"]:.2f}, F1@25: {tas_metrics["F1@25"]:.2f}, F1@50: {tas_metrics["F1@50"]:.2f}')
         
         # Check and save best LTA model
         if lta_moc > self.best_lta_moc:
             self.best_lta_moc = lta_moc
             self.best_lta_metrics = lta_metrics
             torch.save(self.model.state_dict(), f'{result_dir}/best_lta_model.pth')
-            print(f'New best LTA model saved! Score: {lta_moc:.4f}')
+            print(f'New best LTA model saved! Score: {lta_moc:.2f}')
             if lta_metrics:
-                print(f'  LTA Metrics - obs0.2: {lta_metrics["obs0.2"]["obs0.2_pred0.1"]:.4f}/{lta_metrics["obs0.2"]["obs0.2_pred0.2"]:.4f}/{lta_metrics["obs0.2"]["obs0.2_pred0.3"]:.4f}/{lta_metrics["obs0.2"]["obs0.2_pred0.5"]:.4f}, obs0.3: {lta_metrics["obs0.3"]["obs0.3_pred0.1"]:.4f}/{lta_metrics["obs0.3"]["obs0.3_pred0.2"]:.4f}/{lta_metrics["obs0.3"]["obs0.3_pred0.3"]:.4f}/{lta_metrics["obs0.3"]["obs0.3_pred0.5"]:.4f}')
+                print(f'  LTA Metrics - obs0.2: {lta_metrics["obs0.2"]["obs0.2_pred0.1"]:.2f}/{lta_metrics["obs0.2"]["obs0.2_pred0.2"]:.2f}/{lta_metrics["obs0.2"]["obs0.2_pred0.3"]:.2f}/{lta_metrics["obs0.2"]["obs0.2_pred0.5"]:.2f}, obs0.3: {lta_metrics["obs0.3"]["obs0.3_pred0.1"]:.2f}/{lta_metrics["obs0.3"]["obs0.3_pred0.2"]:.2f}/{lta_metrics["obs0.3"]["obs0.3_pred0.3"]:.2f}/{lta_metrics["obs0.3"]["obs0.3_pred0.5"]:.2f}')
         
         # Check and save best combined model
         if combined_score > self.best_both_score:
             self.best_both_score = combined_score
             self.best_combined_metrics = {'tas': tas_metrics, 'lta': lta_metrics}
             torch.save(self.model.state_dict(), f'{result_dir}/best_combined_model.pth')
-            print(f'New best combined model saved! Score: {combined_score:.4f} (TAS: {tas_acc:.4f}, LTA: {lta_moc:.4f})')
+            print(f'New best combined model saved! Score: {combined_score:.2f} (TAS: {tas_acc:.2f}, LTA: {lta_moc:.2f})')
             if tas_metrics and lta_metrics:
-                print(f'  TAS Metrics - Acc: {tas_metrics["Acc"]:.4f}, Edit: {tas_metrics["Edit"]:.4f}, F1@10: {tas_metrics["F1@10"]:.4f}, F1@25: {tas_metrics["F1@25"]:.4f}, F1@50: {tas_metrics["F1@50"]:.4f}')
-                print(f'  LTA Metrics - obs0.2: {lta_metrics["obs0.2"]["obs0.2_pred0.1"]:.4f}/{lta_metrics["obs0.2"]["obs0.2_pred0.2"]:.4f}/{lta_metrics["obs0.2"]["obs0.2_pred0.3"]:.4f}/{lta_metrics["obs0.2"]["obs0.2_pred0.5"]:.4f}, obs0.3: {lta_metrics["obs0.3"]["obs0.3_pred0.1"]:.4f}/{lta_metrics["obs0.3"]["obs0.3_pred0.2"]:.4f}/{lta_metrics["obs0.3"]["obs0.3_pred0.3"]:.4f}/{lta_metrics["obs0.3"]["obs0.3_pred0.5"]:.4f}')
+                print(f'  TAS Metrics - Acc: {tas_metrics["Acc"]:.2f}, Edit: {tas_metrics["Edit"]:.2f}, F1@10: {tas_metrics["F1@10"]:.2f}, F1@25: {tas_metrics["F1@25"]:.2f}, F1@50: {tas_metrics["F1@50"]:.2f}')
+                print(f'  LTA Metrics - obs0.2: {lta_metrics["obs0.2"]["obs0.2_pred0.1"]:.2f}/{lta_metrics["obs0.2"]["obs0.2_pred0.2"]:.2f}/{lta_metrics["obs0.2"]["obs0.2_pred0.3"]:.2f}/{lta_metrics["obs0.2"]["obs0.2_pred0.5"]:.2f}, obs0.3: {lta_metrics["obs0.3"]["obs0.3_pred0.1"]:.2f}/{lta_metrics["obs0.3"]["obs0.3_pred0.2"]:.2f}/{lta_metrics["obs0.3"]["obs0.3_pred0.3"]:.2f}/{lta_metrics["obs0.3"]["obs0.3_pred0.5"]:.2f}')
